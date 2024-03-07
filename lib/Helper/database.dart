@@ -3,7 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'helper.dart';
 
-
 Database? _database;
 List<Map<String, dynamic>> WholeDatalist = [];
 
@@ -45,7 +44,8 @@ class LocalDatabase {
       customerName TEXT NOT NULL,
       order_data TEXT NOT NULL,
       upload TEXT DEFAULT 'No',
-      date_time TEXT NOT NULL
+      date_time TEXT NOT NULL,
+      isalesman TEXT NOT NULL
     )
   ''');
   }
@@ -90,7 +90,7 @@ class LocalDatabase {
   }
 
   Future<int> addApiDataLocally(String customerCode, String customerName,
-      List<Map<String, dynamic>> items) async {
+      List<Map<String, dynamic>> items, String isaleman) async {
     try {
       return await _database.transaction((txn) async {
         // Convert the items to a list of Map<String, dynamic>
@@ -113,13 +113,14 @@ class LocalDatabase {
         // Insert the entire order into the database with the current date and time
         int insertedId = await txn.rawInsert(
           'INSERT INTO Localdata ('
-              'customerCode, customerName, order_data, date_time)'
-              'VALUES (?, ?, ? ,?)',
+          'customerCode, customerName, order_data, date_time, isalesman)'
+          'VALUES (?, ?, ? ,?, ?)',
           [
             customerCode,
             customerName,
             jsonEncode(itemsAsMaps),
-            formattedDateTime
+            formattedDateTime,
+            isaleman
           ],
         );
 
@@ -133,27 +134,26 @@ class LocalDatabase {
     }
   }
 
-
   Future<void> fetchDataAndStoreLocally() async {
     try {
       // Fetch data from the API
-      Map<String, dynamic> apiData = await ApiHandler.fetchData(
-          'your_api_path');
+      Map<String, dynamic> apiData =
+          await ApiHandler.fetchData('your_api_path');
 
       // Extract customerName and items from the apiData map
       String customerCode = apiData['customerCode'] ?? '';
       String customerName = apiData['customerName'] ?? '';
+      String isaleman = apiData['code'] ?? '';
       List<Map<String, dynamic>> items = apiData['items'] ?? [];
 
       // Store the fetched API data in the local database and get the inserted ID
-      int insertedId = await addApiDataLocally(
-          customerCode, customerName, items);
+      int insertedId =
+          await addApiDataLocally(customerCode, customerName, items, isaleman);
 
       // Now you can use the insertedId to update the record if needed
       // For example, you can call Updatedata method with the new data
-      await Updatedata(
-          customerCode, customerName, items as List<Map<String, dynamic>>,
-          insertedId);
+      await Updatedata(customerCode, customerName,
+          items as List<Map<String, dynamic>>, insertedId);
 
       // await postData();
     } catch (e) {
@@ -161,7 +161,6 @@ class LocalDatabase {
       throw e;
     }
   }
-
 
   // Load data into WholeDatalist
   Future<void> fetchDataFromDatabase() async {
