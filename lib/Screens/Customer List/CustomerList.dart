@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,23 +20,7 @@ class _CustomerListState extends State<CustomerList> {
   @override
   void initState() {
     super.initState();
-    getRecords();
-    loadData();
-  }
-
-  Future<void> getRecords() async {
-    String uri = "http://isofttouch.com/eorder/view_data.php";
-    try {
-      var response = await http.get(Uri.parse(uri));
-      setState(() {
-        userdata = jsonDecode(response.body);
-        saveData(userdata);
-        filteredUserData = List.from(userdata);
-        print('userdata: $userdata');
-      });
-    } catch (e) {
-      print(e);
-    }
+    CustomerLoad();
   }
 
   void filterData(String id) {
@@ -50,13 +33,7 @@ class _CustomerListState extends State<CustomerList> {
     });
   }
 
-  Future<void> saveData(List<dynamic> data) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String jsonData = jsonEncode(data);
-    await prefs.setString('userdata', jsonData);
-  }
-
-  Future<void> loadData() async {
+  Future<void> CustomerLoad() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String jsonData = prefs.getString('userdata') ?? '[]';
     setState(() {
@@ -70,7 +47,7 @@ class _CustomerListState extends State<CustomerList> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 5, right: 15, left: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: Column(
             children: [
               Row(
@@ -117,17 +94,25 @@ class _CustomerListState extends State<CustomerList> {
                   itemCount: filteredUserData.length,
                   itemBuilder: (context, index) {
                     return Card(
+                      elevation: 0,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
                       child: ListTile(
                         leading: Text(
                           filteredUserData[index]['cid'],
                           style:
-                              const TextStyle(fontSize: 16, color: Colors.red),
+                              const TextStyle(fontSize: 16, color: Colors.teal),
                         ),
                         title: Text(
                           filteredUserData[index]['cname'],
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                          style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87),
                         ),
-                        subtitle: Text(filteredUserData[index]['address1']),
+                        subtitle: Text(filteredUserData[index]['address1'],
+                            style: const TextStyle(fontSize: 10)),
                         onTap: () {},
                       ),
                     );
