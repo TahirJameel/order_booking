@@ -49,7 +49,8 @@ class _UploadDataState extends State<UploadData> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Data',
+        title: Text(
+          'Upload Data',
           style: GoogleFonts.dancingScript(
             fontSize: 25,
             fontWeight: FontWeight.bold,
@@ -66,9 +67,9 @@ class _UploadDataState extends State<UploadData> {
                 String orderDataString =
                     filteredData[index]['order_data']?.toString() ?? '';
                 List<Map<String, dynamic>> orderData =
-                (jsonDecode(orderDataString) as List<dynamic>)
-                    .cast<Map<String, dynamic>>()
-                    .toList();
+                    (jsonDecode(orderDataString) as List<dynamic>)
+                        .cast<Map<String, dynamic>>()
+                        .toList();
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -107,7 +108,7 @@ class _UploadDataState extends State<UploadData> {
                                       horizontal: 12),
                                   child: Row(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
                                         child: Text(
@@ -147,7 +148,7 @@ class _UploadDataState extends State<UploadData> {
             buttonColor: Colors.black54,
             textCancel: 'Cancel',
             textConfirm: 'Confirm',
-            onConfirm: (){
+            onConfirm: () {
               Navigator.of(context).pop(true);
             },
           );
