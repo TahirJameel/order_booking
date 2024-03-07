@@ -21,10 +21,14 @@ class _LoginState extends State<Login> {
 
   late SharedPreferences logindata;
   late bool ready;
-  Future<void> saveData(String userid, String password) async {
+
+  Future<void> saveData(
+      String userid, String password, String code, String cname) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('userid', userid);
     prefs.setString('password', password);
+    prefs.setString('jcid', code);
+    prefs.setString('jcname', cname);
     prefs.setBool('isLoggedIn', true);
   }
 
@@ -41,20 +45,21 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     Future login() async {
       try {
-        var url = Uri.parse("http://isofttouch.com/eorder/login1.php?loginid=${userid.text}&pascode=${password.text}");
+        var url = Uri.parse(
+            "http://isofttouch.com/eorder/login1.php?loginid=${userid.text}&pascode=${password.text}");
         var response = await http.get(url);
         var data = json.decode(response.body);
 
-        if (data == "Success") {
+        if (data['jstatus'] == "Success") {
           Get.snackbar('Login', 'Successful');
 
           // Save user data to shared preferences
-          saveData(userid.text, password.text);
+          saveData(userid.text, password.text, data['jcid'], data['jcname']);
 
           // Set the isLoginIn flag to true
           logindata.setBool('isLoggedIn', true);
 
-          Get.offAll(const Dashboard());
+          Get.offAll(Dashboard(cname: data['jcname']));
         } else {
           Get.snackbar('Incorrect', 'Userid Or Password');
         }
@@ -62,7 +67,7 @@ class _LoginState extends State<Login> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content:
-              Center(child: Text('please check your internet connection')),
+                  Center(child: Text('please check your internet connection')),
               backgroundColor: Colors.blueGrey),
         );
       }
@@ -110,7 +115,7 @@ class _LoginState extends State<Login> {
                           padding: const EdgeInsets.all(17),
                           placeholder: 'User id',
                           placeholderStyle:
-                          const TextStyle(color: Colors.black45),
+                              const TextStyle(color: Colors.black45),
                           prefix: const Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: Icon(Iconsax.user_edit,
@@ -143,7 +148,7 @@ class _LoginState extends State<Login> {
                           padding: const EdgeInsets.all(17),
                           placeholder: 'Password',
                           placeholderStyle:
-                          const TextStyle(color: Colors.black45),
+                              const TextStyle(color: Colors.black45),
                           prefix: const Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: Icon(Iconsax.password_check,
@@ -174,7 +179,6 @@ class _LoginState extends State<Login> {
                           ),
                         ),
 
-
                         // const SizedBox(height: 20),
                         //
                         // // Company Id TextField
@@ -191,7 +195,7 @@ class _LoginState extends State<Login> {
                         //   padding: const EdgeInsets.all(17),
                         //   placeholder: 'Company ID',
                         //   placeholderStyle:
-                        //   const TextStyle(color: Colors.black45),
+                        //       const TextStyle(color: Colors.black45),
                         //   prefix: const Padding(
                         //     padding: EdgeInsets.only(left: 10),
                         //     child: Icon(Iconsax.direct_right,
@@ -242,10 +246,11 @@ class _LoginState extends State<Login> {
 
     print(isLoggedIn);
     if (isLoggedIn) {
+      SharedPreferences _preferences = await SharedPreferences.getInstance();
+      String isaleman = _preferences.getString('jcname') ?? '';
       // User is logged in, navigate to the dashboard screen
-      Get.offAll(const Dashboard());
-      // Navigator.pushReplacement(
-      //     context, MaterialPageRoute(builder: (context) => Dashboard()));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => Dashboard(cname: isaleman)));
     }
   }
 
