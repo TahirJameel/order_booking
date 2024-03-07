@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -23,21 +22,7 @@ class _ProductListState extends State<ProductList> {
   @override
   void initState() {
     super.initState();
-    getRecords();
-    loadData();
-  }
-
-  Future<void> getRecords() async {
-    String uri = "http://isofttouch.com/eorder/product.php";
-    try {
-      var response = await http.get(Uri.parse(uri));
-      setState(() {
-        Products = jsonDecode(response.body);
-        saveData(Products);
-        UserData = List.from(Products);
-        print('Products: $Products');
-      });
-    } catch (e) {}
+    ProductLoad();
   }
 
   void filterData(String id) {
@@ -49,13 +34,7 @@ class _ProductListState extends State<ProductList> {
     });
   }
 
-  Future<void> saveData(List<dynamic> data) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String jsonData = jsonEncode(data);
-    await prefs.setString('Products', jsonData);
-  }
-
-  Future<void> loadData() async {
+  Future<void> ProductLoad() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String jsonData = prefs.getString('Products') ?? '[]';
     setState(() {
@@ -69,7 +48,7 @@ class _ProductListState extends State<ProductList> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 5, right: 15, left: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: Column(
             children: [
               Row(
@@ -116,19 +95,26 @@ class _ProductListState extends State<ProductList> {
                   itemCount: UserData.length,
                   itemBuilder: (context, index) {
                     return Card(
+                      elevation: 0,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
                       child: ListTile(
                         leading: Text(
                           UserData[index]['cid'],
                           style:
-                              const TextStyle(fontSize: 16, color: Colors.red),
+                              const TextStyle(fontSize: 16, color: Colors.teal),
                         ),
                         title: Text(
                           UserData[index]['cname'],
-                          style: const TextStyle(fontWeight: FontWeight.w400),
+                          style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87),
                         ),
                         trailing: Text(UserData[index]['cost_price'],
                             style: const TextStyle(
-                                color: Colors.black,
+                                color: Colors.red,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500)),
                         onTap: () {},
