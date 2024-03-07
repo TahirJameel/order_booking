@@ -33,11 +33,11 @@ class _SaveDataState extends State<SaveData> {
     fetchDataFromDatabase();
     _getCurrentAddress();
   }
+
   Future<String> _getCurrentAddress() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
     LocationData _locationData;
-
 
     // Check if location service is enabled, if not, request it.
     _serviceEnabled = await location.serviceEnabled();
@@ -66,12 +66,12 @@ class _SaveDataState extends State<SaveData> {
 
 // Use geocoding to convert coordinates to address.
     List<Placemark> placemarks =
-    await placemarkFromCoordinates(latitude, longitude);
-
+        await placemarkFromCoordinates(latitude, longitude);
 
     // Extract the address from the placemark.
     Placemark placemark = placemarks[0];
-    String address = "${placemark.street}, ${placemark.locality}, ${placemark.administrativeArea}, ${placemark.country}";
+    String address =
+        "${placemark.street}, ${placemark.locality}, ${placemark.administrativeArea}, ${placemark.country}";
 
     // Return the address.
     return address;
@@ -105,7 +105,7 @@ class _SaveDataState extends State<SaveData> {
     filteredData = savedData.where((data) {
       int orderId = savedData.indexOf(data) + 1; // Auto-incremented ID
       String date =
-      formattedDate(data['date_time']); // Extract date without time
+          formattedDate(data['date_time']); // Extract date without time
 
       return orderId.toString().startsWith(idQuery) &&
           date.toLowerCase().contains(dateQuery) &&
@@ -123,7 +123,6 @@ class _SaveDataState extends State<SaveData> {
       String url = 'http://isofttouch.com/eorder/insert1.php';
 
       String currentAddress = await _getCurrentAddress();
-
 
       for (var data in filteredData) {
         try {
@@ -143,9 +142,9 @@ class _SaveDataState extends State<SaveData> {
           String currentDate = DateFormat('y/M/d').format(DateTime.now());
 
           List<Map<String, dynamic>> orderData =
-          (jsonDecode(OrderdataString) as List<dynamic>)
-              .cast<Map<String, dynamic>>()
-              .toList();
+              (jsonDecode(OrderdataString) as List<dynamic>)
+                  .cast<Map<String, dynamic>>()
+                  .toList();
 
           for (var order in orderData) {
             String itemCode = order['itemCode']?.toString() ?? 'N/A';
@@ -159,11 +158,10 @@ class _SaveDataState extends State<SaveData> {
               'itemcode': itemCode,
               'itemname': itemName,
               'quantity': quantity,
-              'salesman' : isaleman,
-              'cdate' : currentDate,
-              'cdatetime' : idate,
+              'salesman': isaleman,
+              'cdate': currentDate,
+              'cdatetime': idate,
               'clocation': currentAddress
-
             });
 
             // Update the upload status to 'Yes' after successful API response
@@ -284,32 +282,29 @@ class _SaveDataState extends State<SaveData> {
                 filteredData[reversedIndex]['customerName']?.toString() ??
                     'N/A';
             String orderDataString =
-                filteredData[reversedIndex]['order_data']?.toString() ??
-                    '';
+                filteredData[reversedIndex]['order_data']?.toString() ?? '';
 
             List<Map<String, dynamic>> orderData =
-            (jsonDecode(orderDataString) as List<dynamic>)
-                .cast<Map<String, dynamic>>()
-                .toList();
+                (jsonDecode(orderDataString) as List<dynamic>)
+                    .cast<Map<String, dynamic>>()
+                    .toList();
 
             return Column(
               children: [
                 if (reversedIndex == filteredData.length - 1 ||
-                    !isSameDay(
-                        filteredData[reversedIndex + 1]['date_time'],
+                    !isSameDay(filteredData[reversedIndex + 1]['date_time'],
                         filteredData[reversedIndex]['date_time']))
 
-                // Date Field Container
+                  // Date Field Container
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 3, horizontal: 10),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
-                      formattedDate(
-                          filteredData[reversedIndex]['date_time']),
+                      formattedDate(filteredData[reversedIndex]['date_time']),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -326,8 +321,8 @@ class _SaveDataState extends State<SaveData> {
                     child: ExpansionTile(
                         leading: Text(
                           '$orderId',
-                          style: const TextStyle(
-                              fontSize: 15, color: Colors.red),
+                          style:
+                              const TextStyle(fontSize: 15, color: Colors.red),
                         ),
                         title: Text(
                           customerName,
@@ -354,11 +349,11 @@ class _SaveDataState extends State<SaveData> {
                                 order['quantity']?.toString() ?? 'N/A';
 
                             return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               child: Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
@@ -372,8 +367,7 @@ class _SaveDataState extends State<SaveData> {
                                     child: Text(
                                       quantity,
                                       style: const TextStyle(
-                                          color: Colors.red,
-                                          fontSize: 14),
+                                          color: Colors.red, fontSize: 14),
                                     ),
                                   ),
                                 ],
@@ -381,11 +375,9 @@ class _SaveDataState extends State<SaveData> {
                             );
                           }).toList(),
                           Padding(
-                            padding:
-                            const EdgeInsets.symmetric(vertical: 5),
+                            padding: const EdgeInsets.symmetric(vertical: 5),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 // Edit Button Widget
                                 SizedBox(
@@ -394,23 +386,21 @@ class _SaveDataState extends State<SaveData> {
                                     color: Colors.green,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8),
-                                    borderRadius:
-                                    BorderRadius.circular(3),
+                                    borderRadius: BorderRadius.circular(3),
                                     child: const Text(
                                       'Edit Order',
                                       style: TextStyle(fontSize: 13),
                                     ),
                                     onPressed: () {
                                       if (filteredData[reversedIndex]
-                                      ['upload'] !=
+                                              ['upload'] !=
                                           'Yes') {
                                         Get.defaultDialog(
                                           title: 'Confirmation',
                                           content: Row(
                                             children: [
                                               CupertinoButton(
-                                                child:
-                                                const Text('Cancel'),
+                                                child: const Text('Cancel'),
                                                 onPressed: () {
                                                   // Close the dialog and return false
                                                   Navigator.of(context)
@@ -418,34 +408,27 @@ class _SaveDataState extends State<SaveData> {
                                                 },
                                               ),
                                               CupertinoButton(
-                                                child:
-                                                const Text('Confirm'),
+                                                child: const Text('Confirm'),
                                                 onPressed: () async {
-                                                  if (orderData
-                                                      .isNotEmpty &&
-                                                      customerName
-                                                          .isNotEmpty) {
+                                                  if (orderData.isNotEmpty &&
+                                                      customerName.isNotEmpty) {
                                                     int recordId =
                                                         orderId; // Replace with your logic
 
                                                     // Pass the selected customer data to the EditOrder screen
                                                     bool result =
-                                                    await Navigator
-                                                        .push(
+                                                        await Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
-                                                        builder:
-                                                            (context) =>
+                                                        builder: (context) =>
                                                             NewOrder(
-                                                              Code: Code,
-                                                              customerName:
+                                                          Code: Code,
+                                                          customerName:
                                                               customerName,
-                                                              orderData:
-                                                              orderData,
-                                                              recordId:
-                                                              recordId,
-                                                              isedit: true,
-                                                            ),
+                                                          orderData: orderData,
+                                                          recordId: recordId,
+                                                          isedit: true,
+                                                        ),
                                                       ),
                                                     );
 
@@ -474,23 +457,21 @@ class _SaveDataState extends State<SaveData> {
                                     color: Colors.red,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8),
-                                    borderRadius:
-                                    BorderRadius.circular(3),
+                                    borderRadius: BorderRadius.circular(3),
                                     child: const Text(
                                       'Delete Order',
                                       style: TextStyle(fontSize: 13),
                                     ),
                                     onPressed: () {
                                       if (filteredData[reversedIndex]
-                                      ['upload'] !=
+                                              ['upload'] !=
                                           "Yes") {
                                         Get.defaultDialog(
                                           title: 'Confirmation',
                                           content: Row(
                                             children: [
                                               CupertinoButton(
-                                                child:
-                                                const Text('Cancel'),
+                                                child: const Text('Cancel'),
                                                 onPressed: () {
                                                   // Close the dialog and return false
                                                   Navigator.of(context)
@@ -498,12 +479,10 @@ class _SaveDataState extends State<SaveData> {
                                                 },
                                               ),
                                               CupertinoButton(
-                                                child:
-                                                const Text('Confirm'),
+                                                child: const Text('Confirm'),
                                                 onPressed: () async {
-                                                  LocalDatabase
-                                                  localDatabase =
-                                                  LocalDatabase();
+                                                  LocalDatabase localDatabase =
+                                                      LocalDatabase();
                                                   localDatabase.Deletedb(
                                                       orderId);
                                                   await fetchDataFromDatabase();
@@ -522,16 +501,14 @@ class _SaveDataState extends State<SaveData> {
 
                                 // Order Time Field
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
                                   decoration: BoxDecoration(
                                     color: const Color(0xffe8e8e4),
-                                    borderRadius:
-                                    BorderRadius.circular(3),
+                                    borderRadius: BorderRadius.circular(3),
                                   ),
                                   child: Text(
-                                    formattedTime(
-                                        filteredData[reversedIndex]
+                                    formattedTime(filteredData[reversedIndex]
                                         ['date_time']),
                                     style: const TextStyle(
                                         color: Colors.black,
