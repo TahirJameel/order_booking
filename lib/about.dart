@@ -11,18 +11,17 @@ class About extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'About SoftTouch',
+          'About',
           style: TextStyle(fontSize: 23, fontWeight: FontWeight.w400),
         ),
-        centerTitle: true,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 50, left: 30, right: 30),
+          padding: const EdgeInsets.only(top: 40, left: 30, right: 30),
           child: Column(
             children: [
-              Image.asset('assets/images/softtouch_black.png', scale: 2),
-              const SizedBox(height: 20),
+              Image.asset('assets/images/soft-touch_black.png', scale: 2),
+              const SizedBox(height: 50),
               Text(
                 'SoftTouch Technologies has been delivering top notch software solutions and it services to our clients for more than 20 years we offer our services in multiple countries around the world.',
                 style: GoogleFonts.exo(
