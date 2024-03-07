@@ -14,7 +14,8 @@ import 'login.dart';
 import 'package:http/http.dart' as http;
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  final String cname;
+  const Dashboard({required this.cname});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -25,12 +26,20 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
     initial();
+    loadData();
+  }
+
+  void loadData() async {
+    SharedPreferences _preferences = await SharedPreferences.getInstance();
+    String iname = _preferences.getString('jcname') ?? '';
+    if (iname.isEmpty) {
+      iname = widget.cname;
+    }
   }
 
   // Customer List Method
   List<dynamic> userdata = [];
   List<dynamic> filteredUserData = [];
-
   Future<void> CustomerRecords() async {
     String uri = "http://isofttouch.com/eorder/view_data.php";
     try {
@@ -142,12 +151,13 @@ class _DashboardState extends State<Dashboard> {
                   buttonColor: Colors.black54,
                   textCancel: 'Cancel',
                   textConfirm: 'Confirm',
+                  barrierDismissible: false,
                   onConfirm: () async {
                     Navigator.pop(context);
-                    CustomerRecords();
-                    ProductRecords();
-                    CustomerLoad();
-                    ProductLoad();
+                    await CustomerRecords();
+                    await ProductRecords();
+                    await CustomerLoad();
+                    await ProductLoad();
                   },
                 );
               },
@@ -209,7 +219,7 @@ class _DashboardState extends State<Dashboard> {
         padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
         child: Column(
           children: [
-            // Company name and address container
+            // Salesman name container
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(15),
@@ -217,25 +227,12 @@ class _DashboardState extends State<Dashboard> {
                 borderRadius: BorderRadius.circular(10),
                 color: const Color(0xffe8e8e4),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Company Full Name',
-                    style: GoogleFonts.exo(
-                        color: const Color(0xff495057),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    'Company Full Address',
-                    style: GoogleFonts.exo2(
-                        color: const Color(0xff495057),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w300),
-                  ),
-                ],
+              child: Text(
+                widget.cname,
+                style: GoogleFonts.exo(
+                    color: const Color(0xff495057),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600),
               ),
             ),
 
@@ -253,7 +250,7 @@ class _DashboardState extends State<Dashboard> {
                       pngSrc: 'assets/icons/neworder.png',
                       title: "New Order",
                       press: () {
-                        Get.to(const NewOrder(
+                        Get.to(NewOrder(
                           customerName: '',
                           Code: '',
                           orderData: [],
@@ -266,28 +263,28 @@ class _DashboardState extends State<Dashboard> {
                       pngSrc: 'assets/icons/save_data.png',
                       title: "Save Data",
                       press: () {
-                        Get.to(const SaveData());
+                        Get.to(SaveData());
                       },
                     ),
                     CategoryCard(
                       pngSrc: 'assets/icons/customer_list.png',
                       title: "Customer List",
                       press: () {
-                        Get.to(const CustomerList());
+                        Get.to(CustomerList());
                       },
                     ),
                     CategoryCard(
                       pngSrc: 'assets/icons/productlist.png',
                       title: "Products List",
                       press: () {
-                        Get.to(const ProductList());
+                        Get.to(ProductList());
                       },
                     ),
                     CategoryCard(
                       pngSrc: 'assets/icons/upload_data.png',
                       title: "Upload Data",
                       press: () {
-                        Get.to(const UploadData());
+                        Get.to(UploadData());
                       },
                     ),
                   ],
